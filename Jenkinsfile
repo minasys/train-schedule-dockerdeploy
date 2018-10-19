@@ -34,9 +34,6 @@ pipeline {
                 }
             }
         }
-        environment {
-            privat_key= '/var/jenkins_home/.ssh/id_rsa'
-        }
         stage('DeployToProduction') {
             when {
                 branch 'master'
@@ -44,6 +41,9 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
+                environment {
+                    privat_key= '/var/jenkins_home/.ssh/id_rsa'
+                }
                 withCredentials([sshUserPrivateKey(credentialsId: 'centos_key', usernameVariable: 'USERNAME', keyFileVariable: 'privat_key')]) {
                     script {
                         sh "ssh -i $privat_key -o StrictHostKeyChecking=no $USERNAME@$cicdj_ip \"docker pull minasys/train-schedule:${env.BUILD_NUMBER}\""
